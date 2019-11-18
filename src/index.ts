@@ -2,7 +2,7 @@
 import fetch, { Headers, Request, Response } from 'node-fetch';
 import * as FormData from 'form-data';
 
-const SNAPSHOT_DIR = '__requests__';
+// const SNAPSHOT_DIR = '__requests__';
 
 declare global {
   namespace NodeJS {
