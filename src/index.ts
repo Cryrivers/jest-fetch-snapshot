@@ -1,8 +1,53 @@
-// const { default: fetch, Headers } = require('node-fetch');
-import fetch, { Headers, Request, Response } from 'node-fetch';
+import fetch, {
+  Headers,
+  Request,
+  Response,
+  RequestInfo,
+  RequestInit,
+} from 'node-fetch';
 import * as FormData from 'form-data';
+import * as qs from 'query-string';
 
-// const SNAPSHOT_DIR = '__requests__';
+class FetchSnapshotCollector {
+  private snapshots: [RequestInfo, (RequestInit | undefined)?][] = [];
+  private collecting = false;
+  public startCollecting() {
+    this.collecting = true;
+  }
+  public stopCollecting() {
+    this.collecting = false;
+  }
+  public stopAndClearCollecting() {
+    this.stopCollecting();
+    this.clearSnapshot();
+  }
+  /**
+   * @internal
+   */
+  public clearSnapshot() {
+    this.snapshots = [];
+  }
+  /**
+   * @internal
+   */
+  public isCollecting() {
+    return this.collecting;
+  }
+  /**
+   * @internal
+   */
+  public addRequestRecord(snapshot: [RequestInfo, (RequestInit | undefined)?]) {
+    this.snapshots.push(snapshot);
+  }
+  /**
+   * @internal
+   */
+  public getRequests() {
+    return this.snapshots;
+  }
+}
+
+export const fetchSnapshot = new FetchSnapshotCollector();
 
 declare global {
   namespace NodeJS {
@@ -17,6 +62,9 @@ declare global {
 }
 
 const interceptedFetch: typeof fetch = (...args) => {
+  if (fetchSnapshot.isCollecting()) {
+    fetchSnapshot.addRequestRecord(args);
+  }
   return fetch(...args);
 };
 
@@ -29,3 +77,33 @@ export function polyfillFetch() {
   global.Request = Request;
   global.Response = Response;
 }
+
+type URLBodyNormalized = {
+  address: string;
+  payload: {
+    [key: string]: string | string[] | null | undefined;
+  };
+};
+
+export const fetchSnapshotIgnoreHeader: jest.SnapshotSerializerPlugin = {
+  print: (val: FetchSnapshotCollector, serialize) => {
+    const requests = val.getRequests();
+    const normalizedRequests: URLBodyNormalized[] = requests.map(
+      ([requestInfo, requestInit]) => {
+        const reqObject = new Request(requestInfo, requestInit);
+        const isGet = reqObject.method === 'GET';
+        const queryObj = qs.parseUrl(reqObject.url);
+        return {
+          address: `${reqObject.method} ${
+            isGet ? queryObj.url : reqObject.url
+          }`,
+          payload: isGet
+            ? queryObj.query
+            : (((requestInit && requestInit.body) || {}) as {}),
+        };
+      }
+    );
+    return serialize(normalizedRequests);
+  },
+  test: val => val instanceof FetchSnapshotCollector,
+};
