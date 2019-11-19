@@ -78,17 +78,17 @@ export function polyfillFetch() {
   global.Response = Response;
 }
 
-type URLBodyNormalized = {
+type BasicFetchRequestSnapshot = {
   address: string;
   payload: {
     [key: string]: string | string[] | null | undefined;
   };
 };
 
-export const fetchSnapshotIgnoreHeader: jest.SnapshotSerializerPlugin = {
+export const basicFetchSnapshotSerializer: jest.SnapshotSerializerPlugin = {
   print: (val: FetchSnapshotCollector, serialize) => {
     const requests = val.getRequests();
-    const normalizedRequests: URLBodyNormalized[] = requests.map(
+    const normalizedRequests: BasicFetchRequestSnapshot[] = requests.map(
       ([requestInfo, requestInit]) => {
         const reqObject = new Request(requestInfo, requestInit);
         const isGet = reqObject.method === 'GET';
@@ -99,7 +99,11 @@ export const fetchSnapshotIgnoreHeader: jest.SnapshotSerializerPlugin = {
           }`,
           payload: isGet
             ? queryObj.query
-            : (((requestInit && requestInit.body) || {}) as {}),
+            : requestInit &&
+              requestInit.body &&
+              typeof requestInit.body === 'object'
+            ? (requestInit.body as {})
+            : {},
         };
       }
     );
