@@ -1,6 +1,6 @@
 {
   "name": "jest-fetch-snapshot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "author": "Zhongliang Wang",
   "main": "dist/index.js",

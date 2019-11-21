@@ -101,8 +101,8 @@ export const basicFetchSnapshotSerializer: jest.SnapshotSerializerPlugin = {
             ? queryObj.query
             : requestInit &&
               requestInit.body &&
-              typeof requestInit.body === 'object'
-            ? (requestInit.body as {})
+              typeof requestInit.body === 'string'
+            ? JSON.parse(requestInit.body)
             : {},
         };
       }
