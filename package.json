@@ -39,7 +39,7 @@
   "dependencies": {
     "form-data": "^3.0.0",
     "jest": "^24.9.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "query-string": "^6.9.0"
   }
 }
