@@ -86,8 +86,8 @@ type BasicFetchRequestSnapshot = {
 };
 
 export const basicFetchSnapshotSerializer: jest.SnapshotSerializerPlugin = {
-  print: (val: FetchSnapshotCollector, serialize) => {
-    const requests = val.getRequests();
+  print: (val, serialize) => {
+    const requests = (val as FetchSnapshotCollector).getRequests();
     const normalizedRequests: BasicFetchRequestSnapshot[] = requests.map(
       ([requestInfo, requestInit]) => {
         const reqObject = new Request(requestInfo, requestInit);
