@@ -1,6 +1,6 @@
 {
   "name": "jest-fetch-snapshot",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "author": "Zhongliang Wang",
   "main": "dist/index.js",
@@ -28,18 +28,18 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^26.0.23",
     "@types/json-stable-stringify": "^1.0.32",
-    "@types/node-fetch": "^2.5.3",
+    "@types/node-fetch": "^2.5.10",
     "husky": "^3.1.0",
-    "tsdx": "^0.11.0",
-    "tslib": "^1.10.0",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.2.0",
     "typescript": "^3.7.2"
   },
   "dependencies": {
     "form-data": "^3.0.0",
-    "jest": "^24.9.0",
-    "node-fetch": "^2.6.0",
-    "query-string": "^6.9.0"
+    "jest": "^26.6.3",
+    "node-fetch": "^2.6.1",
+    "query-string": "^7.0.0"
   }
 }
